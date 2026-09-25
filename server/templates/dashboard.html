@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Tracker Beta Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .card p {
+            color: #9ca3af;
+            margin-bottom: 0;
+        }
+
+        .section {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            color: #9ca3af;
+        }
+
+        a {
+            color: #60a5fa;
+        }
+
+        .url {
+            max-width: 420px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 800px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+input {
+    background: #111827;
+    color: #f3f4f6;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+.chart-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+
+.chart-label {
+    width: 110px;
+    flex-shrink: 0;
+}
+
+.chart-track {
+    background: #111827;
+    height: 24px;
+    border-radius: 6px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.chart-bar {
+    background: #2563eb;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 6px;
+}
+
+.chart-value {
+    width: 50px;
+    text-align: right;
+    color: #9ca3af;
+}
+
+.hour-chart {
+    max-height: 500px;
+    overflow-y: auto;
+}
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.badge-normal {
+    background: #1f2937;
+    color: #9ca3af;
+    border: 1px solid #374151;
+}
+
+.badge-watch {
+    background: #78350f;
+    color: #fcd34d;
+    border: 1px solid #d97706;
+}
+
+.badge-flagged {
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #dc2626;
+}
+
+.security-reason {
+    margin-top: 6px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+select {
+    background: #111827;
+    color: #f3f4f6;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.remove-button {
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid #dc2626;
+}
+
+.remove-button:hover {
+    background: #991b1b;
+}
+.export-button {
+    display: inline-block;
+    margin-bottom: 18px;
+    padding: 9px 14px;
+    background: #1d4ed8;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.export-button:hover {
+    background: #2563eb;
+}
+.integrity-good {
+    color: #4ade80;
+}
+
+.integrity-bad {
+    color: #f87171;
+}
+
+.integrity-details {
+    margin-top: 8px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+.verify-button {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 7px 11px;
+    background: #1d4ed8;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.verify-button:hover {
+    background: #2563eb;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Tracker Beta</h1>
+
+    <div class="subtitle">
+        Local Browser Activity Security Monitor
+    </div>
+
+
+    <div class="stats">
+
+        <div class="card">
+            <h2>{{ total_visits }}</h2>
+            <p>Total Visits</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ visits_today }}</h2>
+            <p>Visits Today</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ unique_domains }}</h2>
+            <p>Unique Domains</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ unique_users }}</h2>
+            <p>Users</p>
+        </div>
+<div class="card">
+    <h2>{{ watch_events }}</h2>
+    <p>Watch Events</p>
+</div>
+
+<div class="card">
+    <h2>{{ flagged_events }}</h2>
+    <p>Flagged Events</p>
+</div>
+<div class="card integrity-card">
+
+    {% if integrity_verified %}
+
+        <h2 class="integrity-good">
+            VERIFIED
+        </h2>
+
+    {% else %}
+
+        <h2 class="integrity-bad">
+            TAMPERING DETECTED
+        </h2>
+
+    {% endif %}
+
+    <p>Database Integrity</p>
+<a
+    href="/integrity/verify"
+    class="verify-button"
+>
+    Verify Now
+</a>
+
+    <div class="integrity-details">
+        {{ integrity_message }}
+        <br>
+        {{ hashed_event_count }} hashed events
+    </div>
+
+</div>
+
+    </div>
+
+
+    <div class="section">
+<div class="section">
+
+    <h2>Recent Security Events</h2>
+<a
+    href="/export/security.csv"
+    class="export-button"
+>
+    Export Security CSV
+</a>
+
+    {% if security_events %}
+
+    <table>
+
+        <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Domain</th>
+            <th>Severity</th>
+            <th>Reason</th>
+        </tr>
+
+        {% for event in security_events %}
+
+        <tr>
+
+            <td>
+                {{ event["timestamp"] }}
+            </td>
+
+            <td>
+                {{ event["username"] }}
+            </td>
+
+            <td>
+                {{ event["domain"] }}
+            </td>
+
+            <td>
+
+                {% if event["severity"] == "Flagged" %}
+
+                    <span class="badge badge-flagged">
+                        FLAGGED
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-watch">
+                        WATCH
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+                {{ event["reason"] or "No reason provided" }}
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+        <p>No security events recorded.</p>
+
+    {% endif %}
+
+</div>
+<div class="section">
+
+    <h2>Manage Watchlist</h2>
+
+    <form method="POST" action="/watchlist/add">
+
+        <input
+            type="text"
+            name="domain"
+            placeholder="example.com"
+            required
+        >
+
+        <select name="severity">
+
+            <option value="Watch">
+                Watch
+            </option>
+
+            <option value="Flagged">
+                Flagged
+            </option>
+
+        </select>
+
+        <input
+            type="text"
+            name="reason"
+            placeholder="Reason for monitoring"
+        >
+
+        <button type="submit">
+            Add / Update
+        </button>
+
+    </form>
+
+
+    <h3>Current Watchlist</h3>
+
+    {% if watchlist_entries %}
+
+    <table>
+
+        <tr>
+            <th>Domain</th>
+            <th>Severity</th>
+            <th>Reason</th>
+            <th>Action</th>
+        </tr>
+
+        {% for entry in watchlist_entries %}
+
+        <tr>
+
+            <td>
+                {{ entry["domain"] }}
+            </td>
+
+            <td>
+
+                {% if entry["severity"] == "Flagged" %}
+
+                    <span class="badge badge-flagged">
+                        FLAGGED
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-watch">
+                        WATCH
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+                {{ entry["reason"] or "No reason provided" }}
+            </td>
+
+            <td>
+
+                <form
+                    method="POST"
+                    action="/watchlist/remove"
+                >
+
+                    <input
+                        type="hidden"
+                        name="domain"
+                        value="{{ entry['domain'] }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="remove-button"
+                    >
+                        Remove
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+        <p>No domains are currently being monitored.</p>
+
+    {% endif %}
+
+</div>
+
+        <h2>Top Domains</h2>
+
+        <table>
+
+            <tr>
+                <th>Domain</th>
+                <th>Visits</th>
+            </tr>
+
+            {% for item in top_domains %}
+
+            <tr>
+                <td>{{ item["domain"] }}</td>
+                <td>{{ item["visits"] }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+<h3>Visual Comparison</h3>
+
+{% for item in top_domains %}
+
+<div class="chart-row">
+
+    <div class="chart-label">
+        {{ item["domain"] }}
+    </div>
+
+    <div class="chart-track">
+
+        <div
+            class="chart-bar"
+            style="width:
+            {{ (item['visits'] / max_domain_visits * 100) }}%;"
+        >
+        </div>
+
+    </div>
+
+    <div class="chart-value">
+        {{ item["visits"] }}
+    </div>
+
+</div>
+
+{% endfor %}
+    </div>
+<div class="section">
+
+    <h2>Visits by Hour Today</h2>
+
+    <div class="hour-chart">
+
+        {% for item in hourly_visits %}
+
+        <div class="chart-row">
+
+            <div class="chart-label">
+                {{ item["hour"] }}
+            </div>
+
+            <div class="chart-track">
+
+                <div
+                    class="chart-bar"
+                    style="width:
+                    {{ (item['visits'] / max_hourly_visits * 100) }}%;"
+                >
+                </div>
+
+            </div>
+
+            <div class="chart-value">
+                {{ item["visits"] }}
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+<div class="section">
+
+    <h2>Activity — Last 7 Days</h2>
+
+    {% for item in seven_day_visits %}
+
+    <div class="chart-row">
+
+        <div class="chart-label">
+            {{ item["label"] }}
+        </div>
+
+        <div class="chart-track">
+
+            <div
+                class="chart-bar"
+                style="width: {{ (item['visits'] / max_seven_day_visits * 100) }}%;"
+            >
+            </div>
+
+        </div>
+
+        <div class="chart-value">
+            {{ item["visits"] }}
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<div class="section">
+
+    <h2>Search Activity</h2>
+
+    <form method="GET" action="/dashboard">
+
+        <label>Domain</label>
+        <input
+            type="text"
+            name="domain"
+            value="{{ domain_filter }}"
+            placeholder="github.com"
+        >
+
+        <label>User</label>
+        <input
+            type="text"
+            name="user"
+            value="{{ user_filter }}"
+            placeholder="username"
+        >
+
+        <label>Date</label>
+        <input
+            type="date"
+            name="date"
+            value="{{ date_filter }}"
+        >
+
+        <button type="submit">
+            Search
+        </button>
+
+        <a href="/dashboard">
+            Clear
+        </a>
+
+    </form>
+
+</div>
+    <div class="section">
+
+        <h2>Recent Activity</h2>
+
+        <table>
+
+<tr>
+    <th>Time</th>
+    <th>User</th>
+    <th>Domain</th>
+    <th>Security</th>
+    <th>Browser</th>
+    <th>URL</th>
+</tr>
+            {% for visit in recent_visits %}
+
+            <tr>
+
+                <td>
+                    {{ visit["timestamp"] }}
+                </td>
+
+                <td>
+                    {{ visit["username"] }}
+                </td>
+
+                <td>
+                    {{ visit["domain"] }}
+                </td>
+<td>
+
+    {% if visit["severity"] == "Flagged" %}
+
+        <span class="badge badge-flagged">
+            FLAGGED
+        </span>
+
+    {% elif visit["severity"] == "Watch" %}
+
+        <span class="badge badge-watch">
+            WATCH
+        </span>
+
+    {% else %}
+
+        <span class="badge badge-normal">
+            NORMAL
+        </span>
+
+    {% endif %}
+
+    {% if visit["reason"] %}
+
+        <div class="security-reason">
+            {{ visit["reason"] }}
+        </div>
+
+    {% endif %}
+
+</td>
+
+                <td>
+                    {{ visit["browser"] }}
+                </td>
+
+                <td class="url">
+
+                    <a
+                        href="{{ visit['url'] }}"
+                        target="_blank"
+                    >
+                        {{ visit["url"] }}
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+

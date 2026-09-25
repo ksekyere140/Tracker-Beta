@@ -1,5 +1,14 @@
 .venv/
 __pycache__/
 *.pyc
-data/*.db
 .DS_Store
+
+# Private Tracker Beta data
+data/
+
+# Local backups
+*.backup
+*.before-*
+
+# Logs
+*.log
